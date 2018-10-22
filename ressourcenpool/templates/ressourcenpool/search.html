@@ -1,0 +1,107 @@
+{# Implemented and styled by Yaryna Korduba #}
+{# minor wording edits by Julian Küchler #}
+{% extends 'ressourcenpool/base.html' %}
+{% load static %}
+
+{% block css %}
+
+    <link href="{% static 'css/search-style.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+    <br/>
+    <h4 class="my-5 centered text__centered text__header">Willkommen zum Bamberger RessourcenPool</h4>
+
+    <form name="searchform" method="GET" action="/search/">
+    <div class="row col-lg-10 input-group centered">
+            {{ search_form.name }}{{ search_form.type }}
+
+            <button class="input-group-btn btn btn-green" type="submit">Go!</button>
+
+    </div>
+    <br/>
+      <div class="breadcrumb">
+        Suchergebnisse
+      </div>
+
+      <div class="row">
+
+        <!-- Blog Entries Column -->
+
+        <div class="row col-md-8">
+        <div class="row pl-3">
+        {% for item in items %}
+          <div class="col-lg-6 portfolio-item">
+          <div class="card h-100">
+            <a href="/details/{{ item.id }}">
+                {% if item.image %}
+                    <img class="card-img-top" src="{{media_url}}{{ item.image }}" alt="item-image">
+                {% else %}
+                    <img class="card-img-top" src="{{media_url}}{{ 'imgs/items/default.png' }}" alt="">
+                {% endif %}
+            </a>
+            <div class="card-body">
+              <h4 class="card-title">
+                <a href="/details/{{ item.id }}">{{ item.name }}</a>
+              </h4>
+              <p class="card-text">{{ item.description }}</p>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+        </div>
+
+
+          <!-- Pagination -->
+<nav class="col centered">
+  <ul class="pagination justify-content-center">
+       {% if items.has_previous %}
+
+    <li class="page-item"><a class="page-link" href="?page={{ items.previous_page_number }}">Vorherige</a></li>
+      {% endif %}
+  {% for page in page_range %}
+      {% if page_count != 1 %}
+      <li class="page-item"><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
+      {% endif %}
+  {% endfor %}
+    {% if items.has_next %}
+    <li class="page-item"><a class="page-link" href="?page={{ items.next_page_number }}">Nächste</a></li>
+  {% endif %}
+  </ul>
+</nav>
+
+        </div>
+
+
+        <!-- Sidebar Widgets Column -->
+        <div name="searchform" method="GET" action="/search/" class="col">
+          <!-- Search Widget -->
+          <div class="card mb-4">
+            <h5 class="card-header">Kategorien</h5>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-lg-12 category__list">
+            {{ search_form.category }}
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+
+
+        </div>
+
+      </div>
+
+
+     </form>
+
+    <script>
+        'use strict';
+        $(document).ready(function() {
+        $('#Type').multiselect({nonSelectedText: 'Alle Typen'});
+    });
+    </script>
+{% endblock %}

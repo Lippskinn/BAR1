@@ -1,0 +1,38 @@
+{#Created by Sina Fricke#}
+{# minor wording and styling edits by Julian Küchler#}
+{# Changes by Andreas Kirsch (added error message) #}
+{% extends "ressourcenpool/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-lg-5 centered">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title form__header">Anmelden</h5>
+                {% if error %}
+                <div class="alert alert-danger">Die angegebenen Daten sind nicht korrekt!</div>
+                {% endif %}
+                <form method="POST" action="/login/" >
+                    {% csrf_token %}
+                    {{ login_form.as_p }}
+                    <button type="submit" name="btn_login" value="login" class="btn btn-violet mt-2">Anmelden</button>
+                </form>
+                <p></p>
+                <p>Noch keinen Account? <a href="/register">Klicken Sie hier, um sich zu registieren!</a></p>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+

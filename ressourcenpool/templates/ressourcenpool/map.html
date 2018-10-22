@@ -1,0 +1,159 @@
+{#Created by Johannes Pfrang#}
+{# Styled by Yaryna Korduba #}
+{% extends 'ressourcenpool/base.html' %}
+{% load static %}
+
+{% block css %}
+
+    <link href="{% static 'css/leaflet.css' %}" rel="stylesheet">
+    <link href="{% static 'css/leaflet.markercluster/MarkerCluster.css' %}" rel="stylesheet">
+    <link href="{% static 'css/leaflet.markercluster/MarkerCluster.Default.css' %}" rel="stylesheet">
+    <link href="{% static 'css/map-style.css' %}" rel="stylesheet">
+
+{% endblock css %}
+
+{% block js %}
+    <script src="{% static 'js/leaflet/leaflet.js' %}"></script>
+    <script src="{% static 'js/leaflet/leaflet-providers.js' %}"></script>
+    <script src="{% static 'js/leaflet/leaflet.markercluster.js' %}"></script>
+
+{% endblock %}
+
+{% block content %}
+
+
+<div class="modal fade no-results" id="noResultsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body align-middle justify-content-center">
+        Leider, gibt es keine Ergebnisse für diese Anfrage.
+
+        <button type="button" class="btn btn-sm btn-green float-right mr-3" data-dismiss="modal">Ok</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <h2 class="styled-header" id="map_header">Karte der Angebote</h2>
+    <div class="custom__container">
+    <form id="searchForm" class="map-input input-group col-md-8">
+
+        <input id="search" name="search" value="{{ request.GET.q }}" title="Suchtext" type="text" class="form-control col-md-7" placeholder="Suchtext">
+
+        <select id="type" name="type" class="col">
+            <option value="1">Objekt</option>
+            <option value="2">Wissen</option>
+
+        </select>
+
+{#        deleted multiple choice as it caused the problems later on #}
+
+        <select id="category" name="category" class="col">
+            <option value="" selected>Alle Kategorien</option>
+            <option value="Veranstaltungsequipment">Objekt: Veranstaltungsequipment</option>
+            <option value="Werkzeuge, Maschinen und Elektrowerkzeuge">Objekt: Werkzeuge, Maschinen und Elektrowerkzeuge</option>
+            <option value="Räumlichkeiten, Orte, Plätze, Flächen">Objekt: Räumlichkeiten, Orte, Plätze, Flächen</option>
+            <option value="Tolle Wissens-Kategory">Wissen: Tolle Wissens-Kategory</option>
+            <option value="Tolle Objekt-Kategory">Objekt: Tolle Objekt-Kategory</option>
+        </select>
+
+
+
+      <div class="input-group-append">
+            <input  type="submit" value="Suchen" class="btn btn-violet">
+
+      </div>
+    </form>
+    <div id="map" style="min-height:calc(70vh);">
+    </div>
+    </div>
+    <br/>
+
+    <script>
+    'use strict';
+    $(document).ready(function() {
+        $('#category').multiselect({nonSelectedText: 'Alle Kategorien'});
+        $('#type').multiselect({nonSelectedText: 'Alle Type'});
+    });
+    let map = L.map('map').setView([49.89873, 10.90067], 13);
+    // TODO(frontend): choose one of the two map options
+    L.tileLayer.provider('OpenStreetMap.Mapnik').addTo(map);
+
+    const markerLayer = L.markerClusterGroup({
+        'maxClusterRadius': 20, //px only cluster very close objects
+    });
+    map.addLayer(markerLayer);
+
+
+    function addMarkerFor(item, openPopup = false) {
+        // Note: this template is evaluated as a javascript template, so access variables via ${ variable.property }
+        const content = `{% include 'ressourcenpool/popup.html' %}`;
+        const coordinates = [item.latitude, item.longitude];
+
+        // Leaflet.markercluster solution
+        const marker = L.marker(coordinates, {'title': item.name}).bindPopup(content).addTo(markerLayer);
+
+        if (openPopup) marker.openPopup();
+    }
+
+    let currentLoad = null;
+
+    // call with e.g. loadOffers({'search': 'foo'}), loadOffers({'description__contains': 'bar'}), … (see ItemViewSet)
+    // or combine search with filter(s), e.g. {'search': 'foo', 'categories__name': 'bar'}
+    function loadOffers(filters = {}) {
+        let url = '/api/items/';
+        let query = [];
+        for (const [key, value] of Object.entries(filters)) {
+            query.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+        }
+        if (query.length > 0) url += '?' + query.join('&');
+
+        markerLayer.clearLayers(); // remove previous markers
+        currentLoad = $.get(url, results => {
+             console.log("res", results);
+            if (results.length === 0) {
+                $('#noResultsModal').modal('toggle');
+            } else if (results.length === 1) {
+                let item = results[0];
+                addMarkerFor(item, true);
+                map.setView([item.latitude, item.longitude], 13);
+            } else {
+                for (let item of results) {
+                    addMarkerFor(item);
+                }
+            }
+        }).fail((jqXHR, textStatus, errorThrown) => {
+            // TODO: error handling -- the request failed (e.g. the network is down), show an error message somewhere
+            console.error("Failed retrieving list of items: " + textStatus);
+            console.error(errorThrown);
+        });
+    }
+
+    // just fill the map with everything by default
+    loadOffers();
+
+
+    // set-up search/filter form
+    const searchField = document.getElementById('search');
+    const categoryField = document.getElementById('category');
+    const typeField = document.getElementById('type');
+
+    $('#searchForm').submit(e => {
+        e.preventDefault();
+        if (currentLoad) currentLoad.abort();
+        // dynamically add filters if they are set by the user
+        let filters = {};
+        if (searchField.value) {
+            filters['search'] = searchField.value;
+        }
+        if (categoryField.selectedIndex > 0) {
+            filters['categories__name'] = $('#category').val();
+        }
+        if (typeField.selectedIndex>0) {
+            filters['typ'] = categoryField.options[typeField.selectedIndex].value;
+        }
+        loadOffers(filters);
+    });
+    </script>
+{% endblock %}
+{#//data-actions-box="true"#}

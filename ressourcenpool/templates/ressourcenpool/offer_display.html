@@ -1,0 +1,114 @@
+{#Created and styled by Yaryna Korduba#}
+{#Edits by Julian Kuechler#}
+{#Edits by Andreas Kirsch #}
+{#Edits by Johannes Pfrang #}
+{% extends 'ressourcenpool/base.html' %}
+{% load static %}
+
+{% block css %}
+
+    <link href="{% static 'css/leaflet.css' %}" rel="stylesheet">
+    <link href="{% static 'css/leaflet.markercluster/MarkerCluster.css' %}" rel="stylesheet">
+    <link href="{% static 'css/leaflet.markercluster/MarkerCluster.Default.css' %}" rel="stylesheet">
+    <link href="{% static 'css/map-style.css' %}" rel="stylesheet">
+
+{% endblock css %}
+
+{% block js %}
+    <script src="{% static 'js/leaflet/leaflet.js' %}"></script>
+    <script src="{% static 'js/leaflet/leaflet-providers.js' %}"></script>
+    <script src="{% static 'js/leaflet/leaflet.markercluster.js' %}"></script>
+
+{% endblock %}
+
+{% block content %}
+        <h4 class="py-3 text__header">{{ item.name }}</h4>
+
+    <div class="row">
+    {% if item.image %}
+        <img style="width: 100%; max-width: 400px; max-height: 400px;" src="{{media_url}}{{ item.image }}" alt="item-image">
+    {% else %}
+       <img style="width: 100%; max-width: 400px; max-height: 400px;" src="{{media_url}}{{ 'imgs/items/default.png' }}" alt="item-image">
+    {% endif %}
+    <div class="col-md-4 mr-3 position-relative d-inline-flex fixed-top" id="map" style="min-height:400px;  width: 400px;"></div>
+
+    </div>
+    <br/>
+    <div class="col-md-6 p-0">
+    <table class="table">
+    <tr><td>Typ:</td><td>{{ item.type }}</td></tr>
+    <tr><td>Beschreibung:</td><td>{{ item.description|linebreaks }}</td></tr>
+    <tr><td>Kontaktperson/en:</td><td>{{ item.contact.name }}</td></tr>
+    <tr><td>Mail:</td><td><a href="mailto:{{ item.contact.mail }}">{{ item.contact.mail }}</a></td></tr>
+    <tr><td>Als Geschenk?:</td><td>
+    {% if item.isGift %}
+        Ja
+    {% else  %}
+        Nein
+    {% endif %}
+
+    </td></tr>
+    <tr><td>Adresse:</td><td id="address">{{ item.address }} {{ item.plz }}</td></tr>
+    <tr><td>Kategorie:</td>
+        {% for category in item.categories.all %}
+        <td>{{ category.name }}</td>
+        {% endfor %}
+    </tr>
+    </table>
+    </div>
+        {% if user.is_authenticated and item.user.id == user.id %}
+        <a href="/offer/{{item_id}}" class="btn btn-violet my-2">Bearbeiten</a>
+        <br />
+        <a href="/offer/list/" class="btn btn-violet">Meine Angebote</a>
+    {% endif %}
+
+
+    {# XXX: This script is adjusted from map.html and should probably have generic parts in a js file #}
+    <script>
+    'use strict';
+    $(document).ready(function() {
+        $('#category').multiselect({nonSelectedText: 'Alle Kategorien'});
+        $('#type').multiselect({nonSelectedText: 'Alle Type'});
+    });
+            console.log("here");
+    let lat = String({{ item.latitude }});
+    let lng = String({{ item.longitude }});
+    lat = Number(lat.replace(/,/g, '.'));
+    lng = Number(lng.replace(/,/g, '.'));
+    let map = L.map('map').setView([lat, lng], 13);
+    L.tileLayer.provider('OpenStreetMap.Mapnik').addTo(map);
+
+    // TODO: could drop the markercluster for singe item view
+    const markerLayer = L.markerClusterGroup({
+        'maxClusterRadius': 20, //px only cluster very close objects
+    });
+    map.addLayer(markerLayer);
+
+    function addMarkerFor(item, openPopup = false) {
+        // Note: this template is evaluated as a javascript template, so access variables via ${ variable.property }
+        const content = `{% include 'ressourcenpool/popup.html' %}`;
+        const coordinates = [item.latitude, item.longitude];
+        // Leaflet.markercluster solution
+        const marker = L.marker(coordinates, {'title': item.name}).bindPopup(content).addTo(markerLayer);
+
+        if (openPopup) marker.openPopup();
+    }
+
+    function loadOffer() {
+        let url = '/api/items/{{ item.id }}';
+
+        markerLayer.clearLayers(); // remove previous markers
+        //console.log(url)
+        $.get(url, results => {
+            let item = results;
+            addMarkerFor(item, false);
+            map.setView([item.latitude, item.longitude], 13);
+        }).fail((jqXHR, textStatus, errorThrown) => {
+            console.error("Failed retrieving list of items: " + textStatus);
+            console.error(errorThrown);
+        });
+    }
+    // load single item
+    loadOffer();
+    </script>
+{% endblock %}

@@ -1,0 +1,56 @@
+{#Created and styled by Yaryna Korduba#}
+{#some edits by Julian Küchler#}
+{% extends 'ressourcenpool/base.html' %}
+{% load static %}
+
+
+{% block content %}
+    <h4 class="my-5 centered text__centered text__header">Willkommen zum Bamberger RessourcenPool</h4>
+
+        <form class="row col-lg-10 input-group centered" action="/search/" method="GET">
+            <input class="form-control" type="text" placeholder="Suche nach Dingen zum Leihen..." name="name" value="{{ request.GET.q }}">
+            <button class="input-group-btn btn btn-green" onclick="action='/search/'" type="submit">Go!</button>
+        </form>
+        </br>
+      <!-- Marketing Icons Section -->
+      <div class="row card__containter">
+        <div class="col-lg-5 mb-5 centered text__centered">
+          <div class="card h-100">
+            <h4 class="card-header">Ich möchte etwas leihen!</h4>
+            <div class="card-body">
+              <p class="card-text">Mit dem Ressourcenpool haben
+Gemeinwohl-Organisationen ein Tool an
+der Hand, bei dem sie auf einen Klick
+sehen, wer z.B. für ein Event eine
+geeignete Location, Lautsprecheranlage
+oder einen Beamer anbietet. Schauen Sie
+gleich hier nach!</p>
+            </div>
+            <div class="card-footer">
+              <a href="/search/" class="btn btn-violet">Leihen!</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5 mb-5 centered text__centered">
+          <div class="card h-100">
+            <h4 class="card-header">Ich kann etwas anbieten!</h4>
+            <div class="card-body">
+              <p class="card-text">Sie haben einen Seminarraum, Flipchart
+oder eine Buttonmaschine und möchten
+diese mit anderen Vereinen oder
+Initiativen teilen? Dann werden Sie zum
+Verleiher! Hier können Sie auch
+Ressourcen zum Verschenken eintragen.</p>
+            </div>
+            <div class="card-footer">
+                 {% if user.is_authenticated %}
+                     <a href="/offer/" class="btn btn-violet">Anbieten!</a>
+                {% else %}
+                <a href="/login/" class="btn btn-violet">Anbieten!</a>
+                {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+{% endblock %}

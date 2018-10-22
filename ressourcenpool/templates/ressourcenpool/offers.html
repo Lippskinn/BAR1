@@ -1,0 +1,21 @@
+{# Created by Andreas Kirsch #}
+{# Styled by Yaryna Korduba #}
+{% extends 'ressourcenpool/base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="text__container">
+        <h2>Ihre Angebote im Ressourcen Pool Bamberg:</h2>
+        <ol>
+        {% for item in items %}
+            <li><p>{{ item.name }} <a href="/offer/{{ item.id }}">&raquo;Bearbeiten&laquo;</a></p></li>
+        {% empty %}
+            <li>Noch keine Angebote gefunden ...</li>
+        {% endfor %}
+        </ol>
+
+        <br />
+        <a href="/offer"><button type="button" class="btn btn-violet">Jetzt neues Angebot erstellen!</button></a>
+
+    </div>
+{% endblock %}

@@ -1,0 +1,93 @@
+/*Created by Yaryna Korduba*/
+
+.btn-violet {
+  color: #ffffff;
+  background-color: #662D91;
+  border-color: #130269;
+}
+
+.btn-violet:hover,
+.btn-violet:focus,
+.btn-violet:active,
+.btn-violet.active,
+.open .dropdown-toggle.btn-violet {
+  color: #ffffff;
+  background-color: #49247A;
+  border-color: #130269;
+}
+
+.btn-violet:active,
+.btn-violet.active,
+.open .dropdown-toggle.btn-violet {
+  background-image: none;
+}
+
+.btn-violet.disabled,
+.btn-violet[disabled],
+fieldset[disabled] .btn-violet,
+.btn-violet.disabled:hover,
+.btn-violet[disabled]:hover,
+fieldset[disabled] .btn-violet:hover,
+.btn-violet.disabled:focus,
+.btn-violet[disabled]:focus,
+fieldset[disabled] .btn-violet:focus,
+.btn-violet.disabled:active,
+.btn-violet[disabled]:active,
+fieldset[disabled] .btn-violet:active,
+.btn-violet.disabled.active,
+.btn-violet[disabled].active,
+fieldset[disabled] .btn-violet.active {
+  background-color: #662D91;
+  border-color: #130269;
+}
+
+.btn-violet .badge {
+  color: #662D91;
+  background-color: #ffffff;
+}
+
+.btn-green {
+  color: #ffffff;
+  background-color: #84C543;
+  border-color: #59B002;
+}
+
+.btn-green:hover,
+.btn-green:focus,
+.btn-green:active,
+.btn-green.active,
+.open .dropdown-toggle.btn-green {
+  color: #ffffff;
+  background-color: #59B002;
+  border-color: #59B002;
+}
+
+.btn-green:active,
+.btn-green.active,
+.open .dropdown-toggle.btn-green {
+  background-image: none;
+}
+
+.btn-green.disabled,
+.btn-green[disabled],
+fieldset[disabled] .btn-green,
+.btn-green.disabled:hover,
+.btn-green[disabled]:hover,
+fieldset[disabled] .btn-green:hover,
+.btn-green.disabled:focus,
+.btn-green[disabled]:focus,
+fieldset[disabled] .btn-green:focus,
+.btn-green.disabled:active,
+.btn-green[disabled]:active,
+fieldset[disabled] .btn-green:active,
+.btn-green.disabled.active,
+.btn-green[disabled].active,
+fieldset[disabled] .btn-green.active {
+  background-color: #84C543;
+  border-color: #59B002;
+}
+
+.btn-green .badge {
+  color: #84C543;
+  background-color: #ffffff;
+}

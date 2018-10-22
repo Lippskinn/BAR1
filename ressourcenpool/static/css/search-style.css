@@ -1,0 +1,26 @@
+/*created by Yaryna Korduba*/
+button.multiselect {
+    background: white;
+    border-radius: 0;
+    border: 1px solid #ced4da !important;
+    min-width: 145px;
+    max-width: 145px;
+    width: 145px;
+
+}
+
+.multiselect-container>li>a>label.checkbox {
+    margin: 0;
+    padding-left: 7px;
+}
+.multiselect-container>li>a>label.checkbox:hover {
+    background: rgba(102, 45, 145, 0.05);
+}
+.multiselect-container .active {
+    background: rgba(102, 45, 145, 0.24);
+}
+
+.multiselect-container>li>a {
+    text-decoration: none;
+    color: black;
+}

@@ -1,0 +1,104 @@
+{# Created by Andreas Kirsch #}
+{# some minor edits by Julian Kuechler #}
+{% extends 'ressourcenpool/base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="text__container">
+
+        <h2>Meine Account Details</h2>
+        <br />
+
+        <div id="accordion">
+          <div class="card">
+            <div class="card-header" id="headingOne">
+              <h5 class="mb-0">
+                <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                  Standard Kontaktdaten ändern
+                </button>
+              </h5>
+            </div>
+
+            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+              <div class="card-body">
+                <form id="accountForm" action="/account/" method="post">
+                    {% csrf_token %}
+                    <h4>Standard Kontaktdaten</h4>
+                    {{ contact_form.as_p }}
+
+                    <button class="btn btn-primary btn-violet" type="submit">Speichern</button>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header" id="headingTwo">
+              <h5 class="mb-0">
+                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                  Password ändern
+                </button>
+              </h5>
+            </div>
+            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+              <div class="card-body">
+                <form id="accountForm" action="/account/" method="post">
+                    {% csrf_token %}
+
+                    <h4>Password ändern</h4>
+                    {{ password_form.as_p }}
+
+                    <button class="btn btn-primary btn-violet" type="submit">Speichern</button>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header" id="headingThree">
+              <h5 class="mb-0">
+                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                  Organisation ändern
+                </button>
+              </h5>
+            </div>
+            <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+              <div class="card-body">
+                <form id="accountForm" action="/account/" method="post">
+                    {% csrf_token %}
+
+                    <h4>Organisation</h4>
+                    {{ organisation_form.as_p }}
+
+                    <button class="btn btn-primary btn-violet" type="submit">Speichern</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <br />
+        <button class="btn btn-danger w-25" style="margin-top: 10px;" data-href="/unregister" data-toggle="modal" data-target="#confirm-delete">Konto löschen</button>
+
+        <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+
+                        <h4 class="modal-title" id="myModalLabel">Entfernen bestätigen</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <p>Entfernen eines Kontos löscht dieses <b>dauerhaft</b> aus der Datenbank.</p>
+                        <p>Wollen Sie trotzdem fortfahren?</p>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+                        <a class="btn btn-danger btn-ok w-25">Löschen!</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

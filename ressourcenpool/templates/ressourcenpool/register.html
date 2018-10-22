@@ -1,0 +1,50 @@
+{% extends "ressourcenpool/base.html" %}
+{% load static %}
+
+<!-- Written by Sina Fricke -->
+{# minor wording and styling edits by Julian Küchler#}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-lg-10 centered">
+        <div class="card">
+            <div class="card-body text-lg-center">
+                <h5 class="card-title form__header">Registrieren</h5>
+                {% if registered %}
+                <strong>Ihre Registrierung war erfolgreich! Willkommen!</strong>
+                <a href="/account/">Hier kannst du dein Profil bearbeiten</a><br/>
+                {% else %}
+                <strong>Um etwas Anbieten zu können, registriere Dich hier</strong><br/><br/>
+
+                <form id="user_form" method="post" action="/register/"
+                      enctype="multipart/form-data">
+
+                    {% csrf_token %}
+
+                    <!-- Display each form. The as_p method wraps each element in a paragraph
+                         (<p>) element.  -->
+                    <div class="row justify-content-center">
+                    <div class="card col-lg-5">
+                        <div class="card-body text-lg-left">
+                            {{ user_form.as_p }}
+                            {{ profile_form.as_p }}
+                        </div>
+                    </div>
+                    <div class="card col-lg-5">
+                        <div class="card-body text-lg-left">
+                            {{ contact_form.as_p }}
+                        </div>
+                    </div>
+                    </div>
+
+                    <!-- Provide a button to click to submit the form. -->
+                    <input type="submit" name="submit" value="Registrieren" class="btn btn-violet mt-2"/>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+

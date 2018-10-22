@@ -1,0 +1,73 @@
+{# Created by Andreas Kirsch #}
+{# Styled by Yaryna Korduba and Julian Kuechler#}
+{% extends 'ressourcenpool/base.html' %}
+{% load static %}
+
+{% block css %}
+        <link href="{% static 'css/search-style.css' %}" rel="stylesheet">
+{% endblock %}
+{% block content %}
+    <div class="text__container">
+        <h2>Ich möchte etwas anbieten ...</h2>
+        <p>Bitte füllen Sie die folgenden Felder aus, um etwas im Ressourcenpool anzubieten.</p>
+
+        <form id="offerForm" action="/offer/" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <h4>Details zum Angebot</h4>
+            {{ item_form.as_p }}
+
+            <br />
+
+            <h4>Ortsangabe</h4>
+            {{ location_form.as_p }}
+
+            <br />
+            <h4>Kontaktdaten</h4>
+            <label for="checkbox" style="display: inline">Kontaktdaten bearbeiten</label>
+            <input type="checkbox" id="editedContact" name="editedContact"/>
+            <div id="contactForm">
+                {{ contact_form.as_p }}
+            </div>
+
+            {% if itemId > 0 %}
+                <button class="btn btn-violet w-25" type="submit">Angebot bearbeiten</button>
+                <input type="hidden" name="itemId" value="{{ itemId }}" />
+            {% else %}
+                <button class="btn btn-success btn-violet w-25" type="submit">Angebot erstellen</button>
+            {%  endif %}
+        </form>
+
+        {% if itemId > 0 %}
+            <button class="btn btn-danger w-25" style="margin-top: 10px;" data-href="/offer/delete/{{ itemId }}" data-toggle="modal" data-target="#confirm-delete">Angebot entfernen</button>
+        {%  endif %}
+
+        <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+
+                        <h4 class="modal-title" id="myModalLabel">Entfernen bestätigen</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <p>Entfernen eines Angebots löscht dieses <b>dauerhaft</b> aus der Datenbank.</p>
+                        <p>Wollen Sie trotzdem fortfahren?</p>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+                        <a class="btn btn-danger btn-ok w-25">Ja, entfernen</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        'use strict';
+        $(document).ready(function() {
+        $('#Type').multiselect({nonSelectedText: 'Wählen Sie einen Typ'});
+    });
+    </script>
+{% endblock %}
